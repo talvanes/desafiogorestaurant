@@ -62,8 +62,8 @@ const Dashboard: React.FC = () => {
     async function loadFoods(): Promise<void> {
       // Possible Params
       const params = {
-        category_like: selectedCategory,
         name_like: searchValue,
+        category_like: selectedCategory,
       };
 
       // Load Foods from API
@@ -96,7 +96,7 @@ const Dashboard: React.FC = () => {
 
   function handleSelectCategory(id: number): void {
     // Select / deselect category
-    setSelectedCategory(id);
+    setSelectedCategory(id !== selectedCategory ? id : undefined);
   }
 
   return (
