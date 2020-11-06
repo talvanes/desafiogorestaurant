@@ -74,25 +74,74 @@ const FoodDetails: React.FC = () => {
   useEffect(() => {
     async function loadFood(): Promise<void> {
       // Load a specific food with extras based on routeParams id
+      const response = await api.get<Food>(`/foods/${routeParams.id}`);
+
+      const apiFood = Object.assign(response.data, {
+        formattedPrice: formatValue(response.data.price),
+      });
+
+      setFood(apiFood);
+
+      const apiFoodExtras = apiFood.extras.map(extra =>
+        Object.assign(extra, {
+          quantity: 1,
+        }),
+      );
+
+      setExtras(apiFoodExtras);
     }
 
     loadFood();
-  }, [routeParams]);
+  }, [routeParams.id]);
 
   function handleIncrementExtra(id: number): void {
     // Increment extra quantity
+    const foodExtra = extras.find(extra => extra.id === id);
+
+    if (foodExtra) {
+      const atIndex = extras.indexOf(foodExtra);
+
+      const updatedFoodExtra = Object.assign(foodExtra, {
+        quantity: foodExtra.quantity + 1,
+      });
+
+      setExtras(previousExtras => [
+        ...previousExtras.slice(0, atIndex),
+        updatedFoodExtra,
+        ...previousExtras.slice(atIndex + 1),
+      ]);
+    }
   }
 
   function handleDecrementExtra(id: number): void {
     // Decrement extra quantity
+    const foodExtra = extras.find(extra => extra.id === id);
+
+    if (foodExtra && foodExtra.quantity > 1) {
+      const atIndex = extras.indexOf(foodExtra);
+
+      const updatedFoodExtra = Object.assign(foodExtra, {
+        quantity: foodExtra.quantity - 1,
+      });
+
+      setExtras(previousExtras => [
+        ...previousExtras.slice(0, atIndex),
+        updatedFoodExtra,
+        ...previousExtras.slice(atIndex + 1),
+      ]);
+    }
   }
 
   function handleIncrementFood(): void {
     // Increment food quantity
+    setFoodQuantity(foodQuantity + 1);
   }
 
   function handleDecrementFood(): void {
     // Decrement food quantity
+    if (foodQuantity > 1) {
+      setFoodQuantity(foodQuantity - 1);
+    }
   }
 
   const toggleFavorite = useCallback(() => {
